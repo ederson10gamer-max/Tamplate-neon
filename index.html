@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProductScalar - Menu Neon</title>
+
+  <style>
+    /* ===== RESET BÁSICO ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: #040303;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== OVERLAY (fundo escuro quando o menu abre) ===== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+      z-index: 999;
+    }
+    .overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* ===== BOTÃO NEON ===== */
+    .btn-toggle {
+        /*Botão-neon aqui!!*/
+      position: fixed;
+      top: 65px;
+      right: 7px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #040303;/*Cor do botão*/
+      border: 2px solid #dfdd63;/*Cor_borda_botão*/
+      color: #ffffff;/*Cor-texto-botão*/
+      cursor: pointer;
+      z-index: 1001; /* sempre acima da sidebar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+
+      /* brilho neon */
+      box-shadow:
+        0 0 9px #fff6f6,
+        0 0 20px #ffffff,
+        0 0 40px rgba(255, 255, 255, 0.4),
+        inset 0 0 10px rgba(0, 240, 255, 0.2);
+      animation: neon-pulse 2s ease-in-out infinite alternate;
+      /*
+      Para controlar o brilho, você precisa definir o gradiente.
+      Isso permite adicionar camadas de intensidade da cor.
+      Se quiser alterar a distancia que esse gradiante se extende, use as cordenadas 0, 0, 0px
+      que define cada eixo de direção do gradiente colorido.
+      */
+    }
+
+    .btn-toggle .btn-icon {
+      font-size: 20px;
+      line-height: 1;
+      transition: transform 0.4s ease;
+    }
+
+    .btn-toggle .btn-text {
+      font-size: 9px;
+      margin-top: 2px;
+      transition: opacity 0.3s ease;
+    }
+
+    /* Quando o menu está aberto, o botão muda de cor e posição */
+    .btn-toggle.active {
+      left: 320px; /* acompanha a sidebar */
+      border-color: #ff00e0;
+      color: #ff00e0;
+      box-shadow:
+        0 0 10px #ff00e0,
+        0 0 20px #ff00e0,
+        0 0 40px rgba(255, 0, 224, 0.4),
+        inset 0 0 10px rgba(255, 0, 224, 0.2);
+      animation: neon-pulse-pink 2s ease-in-out infinite alternate;
+    }
+
+    .btn-toggle.active .btn-icon {
+      transform: rotate(180deg);
+    }
+
+    .btn-toggle:hover {
+        /*Aumenta a escala do btn ao passar o mouse*/
+      transform: scale(1.1);
+    }
+
+    .btn-toggle:active {
+        /*Animação de fechar o botão*/
+      transform: scale(0.95);
+    }
+
+    /* Animações do neon */
+    @keyframes neon-pulse {
+      from {
+      /*Controla o brilho e  cor*/
+        box-shadow:
+          0 0 8px #06c9ff,
+          0 0 16px #e7ff0b,
+          0 0 30px rgba(148, 148, 148, 0.3),
+          inset 0 0 8px rgba(0, 0, 0, 0.2);
+      }
+      to {
+        box-shadow:
+          0 0 15px #979b9b,
+          0 0 30px #e9fe04,
+          0 0 60px rgba(0, 238, 255, 0.6),
+          inset 0 0 15px rgba(0, 240, 255, 0.4);
+      }
+    }
+
+    @keyframes neon-pulse-pink {
+      from {
+        box-shadow:
+          0 0 8px #ff00e0,
+          0 0 16px #ff00e0,
+          0 0 30px rgba(255, 0, 234, 0.3),
+          inset 0 0 8px rgba(255, 0, 224, 0.2);
+      }
+      to {
+        box-shadow:
+          0 0 15px #ff00e0,
+          0 0 30px #ff00e0,
+          0 0 60px rgba(255, 0, 224, 0.6),
+          inset 0 0 15px rgba(255, 0, 224, 0.4);
+      }
+    }
+
+    /* ===== SIDEBAR (menu lateral) ===== */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 300px;
+      height: 100vh;
+      background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%);
+      border-right: 1px solid rgba(216, 21, 194, 0.2);
+      z-index: 1000;
+      transform: translateX(-100%); /* escondida para fora da tela */
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      padding-top: 110px;
+    }
+
+    /* Classe que o JavaScript adiciona para mostrar a sidebar */
+    .sidebar.open {
+      transform: translateX(0);
+    }
+
+    .sidebar-title {
+      color: #b30eef;/*Cor do texto da sidebar*/
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+      gap: 15px;
+    }
+
+    .sidebar-nav a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border-left: 2px solid transparent;
+      transition: all 0.3s ease;
+      display: block;
+    }
+
+    .sidebar-nav a:hover {
+      color: #b613e8;
+      background: rgba(0, 240, 255, 0.08);
+      border-left-color: #601d80;
+      padding-left: 25px;
+    }
+
+    /* ===== CONTEÚDO DA PÁGINA ===== */
+    .bar-logo {
+      background-color: #201d14;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 998;
+    }
+
+    .nav-brand {
+      color: #00f0ff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    .nav-links a {
+      color: #ccc;
+      text-decoration: none;
+    }
+
+    .grid-principal {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      padding: 20px;
+      margin-top: 100px;
+    }
+
+    .card-item {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #333;
+    }
+
+    .card-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Overlay: escurece o fundo quando o menu abre -->
+  <div id="overlay" class="overlay"></div>
+
+  <!-- Botão neon -->
+  <button id="btnToggle" class="btn-toggle"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+          aria-controls="sidebar">
+    <span class="btn-icon">☰</span>
+    <span class="btn-text">MENU</span>
+  </button>
+
+  <!-- Sidebar -->
+  <nav id="sidebar" class="sidebar" aria-hidden="true">
+    <h3 class="sidebar-title">Menu Lateral</h3>
+    <ul class="sidebar-nav">
+      <li><a href="#">Início</a></li>
+      <li><a href="#">Produtos</a></li>
+      <li><a href="#">Sobre</a></li>
+      <li><a href="#">Contato</a></li>
+    </ul>
+  </nav>
+
+  <!-- Barra de navegação -->
+  <header class="bar-logo">
+    <a class="nav-brand" href="#">BarraNav</a>
+    <ul class="nav-links">
+      <li><a href="#">link-navbar</a></li>
+      <li><a href="#">link-navbar</a></li>
+    </ul>
+  </header>
+
+  <!-- Conteúdo principal -->
+  <main class="grid-principal">
+    <article class="card-item">
+      <img src="https://picsum.photos/seed/destaque/600/400" alt="Imagem de destaque">
+      <h3>Imagem de Destaque</h3>
+    </article>
+
+    <section class="carrossel-horizontal">
+      <article class="card-item">
+        <img src="https://picsum.photos/seed/m1/400/300" alt="Montanha 1">
+        <h3>Imagem 1</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </article>
+      <article class="card-item">
+        <img src="https://picsum.photos/seed/m2/400/300" alt="Montanha 2">
+        <h3>Imagem 2</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </article>
+      <article class="card-item">
+        <img src="https://picsum.photos/seed/m3/400/300" alt="Montanha 3">
+        <h3>Imagem 3</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </article>
+    </section>
+
+    <aside class="card-item">
+      <h3>Informações adicionais</h3>
+      <p>Este bloco se comporta como um aside dentro do layout.</p>
+    </aside>
+  </main>
+
+  <footer>Direitos reservados</footer>
+
+  <script>
+    // ===== Seleciona os elementos do HTML =====
+    const btnToggle = document.getElementById('btnToggle');
+    const sidebar   = document.getElementById('sidebar');
+    const overlay   = document.getElementById('overlay');
+    const btnText   = btnToggle.querySelector('.btn-text');
+    const btnIcon   = btnToggle.querySelector('.btn-icon');
+
+    // Variável de controle: o menu está aberto?
+    let isOpen = false;
+
+    // ===== Função que abre e fecha =====
+    function toggleSidebar() {
+      isOpen = !isOpen; // inverte: true vira false, false vira true
+
+      // Adiciona/remove classes no HTML
+      sidebar.classList.toggle('open', isOpen);
+      overlay.classList.toggle('active', isOpen);
+      btnToggle.classList.toggle('active', isOpen);
+
+      // Troca o texto e o ícone do botão
+      btnText.textContent = isOpen ? 'FECHAR' : 'MENU';
+      btnIcon.textContent = isOpen ? '✕' : '☰';
+
+      // Acessibilidade
+      btnToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+      btnToggle.setAttribute('aria-expanded', isOpen);
+      sidebar.setAttribute('aria-hidden', !isOpen);
+    }
+
+    // ===== Eventos =====
+    btnToggle.addEventListener('click', toggleSidebar); // clicar no botão
+    overlay.addEventListener('click', toggleSidebar);   // clicar no fundo escuro
+
+    // Fechar com a tecla ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        toggleSidebar();
+      }
+    });
+  </script>
+</body>
+</html>
