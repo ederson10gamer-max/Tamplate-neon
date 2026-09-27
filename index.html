@@ -27,14 +27,14 @@
       inset: 0;
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(3px);
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0;/*Fica invisível*/
+      visibility: hidden;/*Escondido*/
       transition: all 0.4s ease;
       z-index: 999;
     }
     .overlay.active {
-      opacity: 1;
-      visibility: visible;
+      opacity: 1; /*Visível, deixa ser transparente*/
+      visibility: visible;/*Elemento fica visível na tela*/
     }
 
     /* ===== BOTÃO NEON ===== */
@@ -68,11 +68,7 @@
         inset 0 0 10px rgba(0, 240, 255, 0.2);
       animation: neon-pulse 2s ease-in-out infinite alternate;
       /*
-      Para controlar o brilho, você precisa definir o gradiente.
-      Isso permite adicionar camadas de intensidade da cor.
-      Se quiser alterar a distancia que esse gradiante se extende, use as cordenadas 0, 0, 0px
-      que define cada eixo de direção do gradiente colorido.
-      */
+      Esse efeito neon é criado utilizando a técnica Box-shadows, várias camadas de sombras são ajustadas para criar um efeito de brilho ao redor do botão     */
     }
 
     .btn-toggle .btn-icon {
@@ -102,6 +98,7 @@
 
     .btn-toggle.active .btn-icon {
       transform: rotate(180deg);
+      /*Gira o botão 180g quando é ativado*/
     }
 
     .btn-toggle:hover {
